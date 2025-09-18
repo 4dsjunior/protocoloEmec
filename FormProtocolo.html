@@ -99,7 +99,7 @@
                             <span id="errorMessage"></span>
                         </div>
 
-                        <form id="documentForm" novalidate>
+                        <form id="documentForm" action="https://hook.us2.make.com/cnh59i44n5r7goz363k3jlnwax4b8rs8" method="POST" enctype="multipart/form-data">
                             <!-- Tipo de Documento -->
                             <div class="mb-3">
                                 <label for="documentType" class="form-label fw-semibold">Tipo de Documento <span class="text-danger">*</span></label>
@@ -423,49 +423,56 @@
 
             // Submissão do formulário
             form.addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                let isFormValid = true;
-                form.querySelectorAll('input[required], select[required], textarea[required]').forEach(field => {
-                    if (!validateField(field)) {
-                        isFormValid = false;
-                    }
-                });
+    e.preventDefault();
 
-                if (!isFormValid) {
-                    showAlert('error', 'Por favor, corrija os erros no formulário antes de enviar.');
-                    window.scrollTo(0, 0);
-                    return;
-                }
+    let isFormValid = true;
+    form.querySelectorAll('input[required], select[required], textarea[required]').forEach(field => {
+        if (!validateField(field)) {
+            isFormValid = false;
+        }
+    });
 
-                // Simular envio
-                const submitIcon = submitBtn.querySelector('.bi-send');
-                const spinner = submitBtn.querySelector('.spinner-border');
-                
-                submitIcon.classList.add('d-none');
-                spinner.classList.remove('d-none');
-                submitBtn.disabled = true;
-                
-                const formData = new FormData(form);
-                formData.append('protocolId', `PROTO-${Date.now()}`);
-                formData.append('timestamp', new Date().toLocaleString('pt-BR'));
-                uploadedFiles.forEach(f => formData.append('files', f.file));
+    if (!isFormValid) {
+        showAlert('error', 'Por favor, corrija os erros no formulário antes de enviar.');
+        window.scrollTo(0, 0);
+        return;
+    }
 
-                console.log('Simulando envio dos dados:');
-                for (let [key, value] of formData.entries()) {
-                    console.log(`${key}:`, value);
-                }
+    const submitIcon = submitBtn.querySelector('.bi-send');
+    const spinner = submitBtn.querySelector('.spinner-border');
+    submitIcon.classList.add('d-none');
+    spinner.classList.remove('d-none');
+    submitBtn.disabled = true;
 
-                setTimeout(() => {
-                    submitIcon.classList.remove('d-none');
-                    spinner.classList.add('d-none');
-                    submitBtn.disabled = false;
-                    
-                    showAlert('success', `Documentos protocolados com sucesso! Protocolo: ${formData.get('protocolId')}`);
-                    clearForm(false); // Limpa o formulário sem confirmação
-                    window.scrollTo(0, 0);
-                }, 2000);
-            });
+    const formData = new FormData(form);
+    formData.append('protocolId', `PROTO-${Date.now()}`);
+    formData.append('timestamp', new Date().toLocaleString('pt-BR'));
+    uploadedFiles.forEach(f => formData.append('files', f.file));
+
+    // Envio REAL para o Make
+    fetch(form.action, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => {
+        if (response.ok) {
+            showAlert('success', `Documentos protocolados com sucesso! Protocolo: ${formData.get('protocolId')}`);
+            clearForm(false);
+        } else {
+            showAlert('error', 'Erro ao enviar os documentos. Tente novamente.');
+        }
+    })
+    .catch(error => {
+        showAlert('error', 'Falha na conexão com o servidor.');
+        console.error(error);
+    })
+    .finally(() => {
+        submitIcon.classList.remove('d-none');
+        spinner.classList.add('d-none');
+        submitBtn.disabled = false;
+        window.scrollTo(0, 0);
+    });
+});
 
             // Limpar formulário
             clearBtn.addEventListener('click', function() {
