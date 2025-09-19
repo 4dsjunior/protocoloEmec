@@ -169,7 +169,7 @@
                                     Anexar Arquivos
                                 </label>
                                 <div class="position-relative">
-                                    <input type="file" class="file-input" id="fileUpload" name="fileUpload" 
+                                    <input type="file" class="file-input" id="fileUpload" 
                                            multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.txt">
                                     <div class="file-upload-area" id="fileUploadArea">
                                         <div class="fs-1 text-muted mb-2">
@@ -446,6 +446,11 @@
             isFormValid = false;
         }
     });
+
+    // Valida explicitamente o campo de upload de arquivo
+    if (!validateField(document.getElementById('fileUpload'))) {
+        isFormValid = false;
+    }
 
     if (!isFormValid) {
         showAlert('error', 'Por favor, corrija os erros no formulário antes de enviar.');
