@@ -386,6 +386,7 @@
                     uploadedFiles.forEach(fileObj => {
                         const item = document.createElement('li');
                         item.className = 'list-group-item d-flex justify-content-between align-items-center file-item';
+                        
                         item.innerHTML = `
                             <div class="d-flex align-items-center text-truncate">
                                 <span class="me-3 fs-4">${getFileIcon(fileObj.file.type)}</span>
@@ -394,17 +395,19 @@
                                     <small class="text-muted">${formatFileSize(fileObj.size)}</small>
                                 </div>
                             </div>
-                            <button type="button" class="btn-close" aria-label="Remover" onclick="removeFile(${fileObj.id})"></button>
+                            <button type="button" class="btn-close" aria-label="Remover"></button>
                         `;
+                        
+                        const removeButton = item.querySelector('.btn-close');
+                        removeButton.addEventListener('click', () => {
+                            uploadedFiles = uploadedFiles.filter(f => f.id !== fileObj.id);
+                            renderFileList();
+                        });
+
                         listGroup.appendChild(item);
                     });
                     fileList.appendChild(listGroup);
                 }
-            }
-
-            window.removeFile = function(fileId) {
-                uploadedFiles = uploadedFiles.filter(f => f.id !== fileId);
-                renderFileList();
             }
 
             function getFileIcon(fileType) {
