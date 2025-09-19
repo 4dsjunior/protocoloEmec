@@ -268,10 +268,22 @@
                 field.classList.remove('is-valid', 'is-invalid');
                 const errorElement = document.getElementById(field.id + 'Error');
 
-                if (field.hasAttribute('required') && !field.value.trim()) {
-                    isValid = false;
-                    errorMsg = getRequiredMessage(field.id);
-                } else if (field.id === 'employeeCAD' && field.value && !/^[0-9]+$/.test(field.value)) {
+                if (field.hasAttribute('required')) {
+                    if (field.id === 'fileUpload') {
+                        if (uploadedFiles.length === 0) {
+                            isValid = false;
+                            errorMsg = 'Por favor, anexe pelo menos um arquivo.';
+                            document.getElementById('fileUploadError').textContent = errorMsg;
+                        } else {
+                            document.getElementById('fileUploadError').textContent = '';
+                        }
+                    } else if (!field.value.trim()) {
+                        isValid = false;
+                        errorMsg = getRequiredMessage(field.id);
+                    }
+                }
+                
+                if (field.id === 'employeeCAD' && field.value && !/^[0-9]+$/.test(field.value)) {
                     isValid = false;
                     errorMsg = 'CAD deve conter apenas números.';
                 } else if (field.id === 'observations' && field.value.length > 0 && field.value.length < 3) {
