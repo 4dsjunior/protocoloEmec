@@ -286,12 +286,39 @@
                     }
                 }
                 
+                // Validações específicas solicitadas (só aqui)
+                
+                // CAD: apenas números
                 if (field.id === 'employeeCAD' && field.value && !/^[0-9]+$/.test(field.value)) {
                     isValid = false;
                     errorMsg = 'CAD deve conter apenas números.';
-                } else if (field.id === 'observations' && field.value.length > 0 && field.value.length < 3) {
-                    isValid = false;
-                    errorMsg = 'Observações devem ter pelo menos 3 caracteres.';
+                }
+
+                // Nome: sem acentos, sem caracteres especiais, sem espaços no início/fim
+                if (field.id === 'employeeName' && field.value) {
+                    const trimmedName = field.value.trim();
+                    if (!/^[A-Za-z0-9 ]+$/.test(trimmedName)) {
+                        isValid = false;
+                        errorMsg = 'Nome deve conter apenas letras, números e espaços (sem acentos ou caracteres especiais).';
+                    } else if (trimmedName !== field.value) {
+                        isValid = false;
+                        errorMsg = 'Nome não pode conter espaços no início ou no fim.';
+                    }
+                }
+
+                // Observações: mesmas regras do nome + mínimo 3 caracteres
+                if (field.id === 'observations' && field.value) {
+                    const trimmedObs = field.value.trim();
+                    if (!/^[A-Za-z0-9 ]+$/.test(trimmedObs)) {
+                        isValid = false;
+                        errorMsg = 'Observação deve conter apenas letras, números e espaços (sem acentos ou caracteres especiais).';
+                    } else if (trimmedObs !== field.value) {
+                        isValid = false;
+                        errorMsg = 'Observação não pode conter espaços no início ou no fim.';
+                    } else if (trimmedObs.length < 3) {
+                        isValid = false;
+                        errorMsg = 'Observações devem ter pelo menos 3 caracteres.';
+                    }
                 }
 
                 if (field.value.trim()) {
